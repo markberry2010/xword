@@ -295,15 +295,30 @@ MINI_PATTERNS: list[set[tuple[int, int]]] = [
 # --- Curated 7x7 patterns (from NYT July 2023) ---
 
 MIDI_PATTERNS: list[set[tuple[int, int]]] = [
-    # Staircase (Jul 08): 12 blacks
+    # Staircase (Jul 08): 12 blacks, word lengths 4-5-6-7
     {(0, 4), (0, 5), (0, 6), (1, 5), (1, 6), (2, 6),
      (4, 0), (5, 0), (5, 1), (6, 0), (6, 1), (6, 2)},
 
-    # Center bar (Jul 15): 4 blacks
+    # Center bar (Jul 15): 4 blacks, 3s and 7s
     {(3, 0), (3, 1), (3, 5), (3, 6)},
 
-    # Corner block (Jul 29): 6 blacks
-    {(0, 0), (0, 1), (0, 2), (3, 4), (3, 5), (3, 6)},
+    # Diamond: 4 blacks, center cross
+    {(0, 3), (3, 0), (3, 6), (6, 3)},
+
+    # Vertical pillars: 4 blacks
+    {(0, 3), (1, 3), (5, 3), (6, 3)},
+
+    # Corner stairs: 5 blacks, mixed lengths
+    {(0, 0), (0, 1), (5, 6), (6, 5), (6, 6)},
+
+    # Center dot + corners: 5 blacks
+    {(0, 6), (1, 6), (3, 3), (5, 0), (6, 0)},
+
+    # Opposite corners: 5 blacks
+    {(0, 0), (0, 1), (3, 3), (6, 5), (6, 6)},
+
+    # Bookends: 6 blacks
+    {(0, 0), (1, 0), (2, 0), (4, 6), (5, 6), (6, 6)},
 ]
 
 

@@ -9,3 +9,4 @@ build/
 node_modules/
 frontend/dist/
 solver-rs/target/
+July23-Minis/

@@ -1,0 +1,71 @@
+.crossword-grid {
+  display: grid;
+  gap: 0;
+  width: 320px;
+  height: 320px;
+  border: 3px solid var(--charcoal);
+  outline: none;
+  flex-shrink: 0;
+  user-select: none;
+  box-shadow: 4px 4px 0 var(--gold-light);
+}
+
+.crossword-grid:focus {
+  box-shadow: 4px 4px 0 var(--gold);
+}
+
+.grid-cell {
+  position: relative;
+  border: 1px solid #c4b99a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--cream);
+  transition: background 0.12s;
+}
+
+.grid-cell.black {
+  background: var(--charcoal);
+  cursor: default;
+}
+
+.grid-cell.active {
+  background: var(--active-cell);
+}
+
+.grid-cell.in-word {
+  background: var(--active-word);
+}
+
+.grid-cell.correct {
+  background: rgba(90, 138, 90, 0.2);
+}
+
+.grid-cell.wrong .cell-letter {
+  color: var(--wrong);
+}
+
+.grid-cell.revealed .cell-letter {
+  color: var(--warm-gray);
+}
+
+.cell-number {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold-dark);
+}
+
+.cell-letter {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--charcoal);
+}

@@ -241,11 +241,25 @@ body {
   }
 }
 
+.clue-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reclue-done {
+  font-size: 0.78rem;
+  color: var(--gold-dark);
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
 /* ============================================
    CLUE LIST
    ============================================ */
 .clue-list {
-  flex: 1;
   min-width: 0;
 }
 
@@ -323,6 +337,36 @@ body {
   font-style: italic;
   margin-bottom: 2rem;
   line-height: 1.6;
+}
+
+.reclue-btn {
+  padding: 0.5rem 1.5rem;
+  border: 1.5px solid var(--gold-light);
+  border-radius: 0;
+  background: transparent;
+  color: var(--warm-gray);
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reclue-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--charcoal);
+  background: var(--active-word);
+}
+
+.reclue-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.modal-spacer {
+  height: 1rem;
 }
 
 .new-puzzle-btn {

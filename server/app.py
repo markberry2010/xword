@@ -15,7 +15,10 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from sse_starlette.sse import EventSourceResponse
 
+from crossword.clues import ClueGenerator
+from crossword.grid import Grid
 from crossword.main import generate_puzzle
+from crossword.solver import Fill, FillScore
 from crossword.wordlist import WordList
 
 if os.environ.get("ENV") != "production":
@@ -39,7 +42,7 @@ _allowed_origins = [o.strip() for o in _allowed_origins if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins if _allowed_origins else ["http://localhost:5173"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -152,9 +155,9 @@ async def generate(
                 "data": json.dumps({"message": str(result)}),
             }
         else:
-            # Estimate cost: ~$0.003/fill judged + ~$0.006 for clue gen
-            num_fills = 15  # top_k_fills
-            cost_dollars = num_fills * 0.003 + 0.006
+            # Estimate cost: Haiku judge ~$0.0007/fill + Sonnet clues ~$0.006
+            num_fills = 15
+            cost_dollars = num_fills * 0.0007 + 0.006
             cost_cents = cost_dollars * 100
 
             yield {
@@ -166,6 +169,66 @@ async def generate(
             }
 
     return EventSourceResponse(event_stream())
+
+
+@app.post("/api/reclue")
+@limiter.limit("3/minute")
+async def reclue(request: Request):
+    """Re-generate clues for an existing puzzle using Opus."""
+    body = await request.json()
+    puzzle_data = body.get("puzzle")
+    difficulty = body.get("difficulty", "medium")
+
+    if not puzzle_data:
+        return JSONResponse(status_code=400, content={"detail": "Missing puzzle data"})
+
+    def _reclue():
+        size = puzzle_data["size"]
+        grid_rows = puzzle_data["grid"]
+
+        # Reconstruct grid and fill from puzzle JSON
+        blacks = set()
+        cell_letters = {}
+        for r, row in enumerate(grid_rows):
+            for c, ch in enumerate(row):
+                if ch == ".":
+                    blacks.add((r, c))
+                else:
+                    cell_letters[(r, c)] = ch
+
+        grid = Grid(size, blacks)
+        pattern = grid.build()
+        slot_index = {s.id: i for i, s in enumerate(pattern.slots)}
+
+        assignments = {}
+        for slot in pattern.slots:
+            word = "".join(cell_letters.get(cell, "?") for cell in slot.cells)
+            assignments[slot.id] = word
+
+        fill = Fill(
+            grid=pattern,
+            assignments=assignments,
+            cell_letters=cell_letters,
+            score=FillScore(),
+        )
+
+        clue_gen = ClueGenerator(model="claude-opus-4-20250514")
+        clues = clue_gen.generate_clues(fill, pattern, difficulty=difficulty)
+
+        clue_data = {}
+        for cl in clues:
+            clue_data[cl.slot_id] = {
+                "word": cl.word,
+                "clue": cl.clue_text,
+                "difficulty": cl.difficulty,
+                "alternatives": cl.alternatives,
+            }
+        return clue_data
+
+    clue_data = await asyncio.to_thread(_reclue)
+
+    # Opus clue cost: ~450 in × $15/M + ~350 out × $75/M = ~$0.033
+    return {"clues": clue_data, "cost_cents": 3.3}
 
 
 # Serve frontend static files in production

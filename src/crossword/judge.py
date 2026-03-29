@@ -84,7 +84,7 @@ class FillJudge:
     def __init__(
         self,
         client: anthropic.Anthropic | None = None,
-        model: str = "claude-sonnet-4-20250514",
+        model: str = "claude-haiku-4-5-20251001",
         max_workers: int = 10,
     ):
         self.model = model

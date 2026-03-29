@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PuzzleData } from "../types";
+import { recluePuzzle } from "../api";
 import { usePuzzle } from "../hooks/usePuzzle";
 import { useNavigation } from "../hooks/useNavigation";
 import { useTimer } from "../hooks/useTimer";
@@ -11,9 +12,10 @@ interface Props {
   puzzle: PuzzleData;
   costCents: number | null;
   onNewPuzzle: () => void;
+  onPuzzleUpdate: (puzzle: PuzzleData, costCents: number | null) => void;
 }
 
-export function PlayPage({ puzzle, costCents, onNewPuzzle }: Props) {
+export function PlayPage({ puzzle, costCents, onNewPuzzle, onPuzzleUpdate }: Props) {
   const { cells, clueInfos, setLetter, checkAll, revealAll, reset, isComplete } =
     usePuzzle(puzzle);
   const { cursor, activeClue, handleKeyDown, clickCell, jumpToClue } =
@@ -22,6 +24,8 @@ export function PlayPage({ puzzle, costCents, onNewPuzzle }: Props) {
   const gridRef = useRef<HTMLDivElement>(null);
   const [finished, setFinished] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [recluing, setRecluing] = useState(false);
+  const [hasReclued, setHasReclued] = useState(false);
   const hasStarted = useRef(false);
 
   const wrappedKeyDown = (e: React.KeyboardEvent) => {
@@ -56,6 +60,21 @@ export function PlayPage({ puzzle, costCents, onNewPuzzle }: Props) {
     hasStarted.current = false;
     setFinished(false);
     setShowModal(false);
+  };
+
+  const handleReclue = async () => {
+    setRecluing(true);
+    try {
+      const result = await recluePuzzle(puzzle, puzzle.metadata.difficulty);
+      const updated = { ...puzzle, clues: result.clues };
+      const newCost = (costCents ?? 0) + result.cost_cents;
+      onPuzzleUpdate(updated, newCost);
+      setHasReclued(true);
+    } catch {
+      // silently fail
+    } finally {
+      setRecluing(false);
+    }
   };
 
   // Joel makes ~$100k/year, ~$274/day, ~1 puzzle/day
@@ -99,14 +118,27 @@ export function PlayPage({ puzzle, costCents, onNewPuzzle }: Props) {
           onCellClick={clickCell}
           onKeyDown={wrappedKeyDown}
         />
-        <ClueList
-          clues={clueInfos}
-          activeClue={activeClue}
-          onClueClick={jumpToClue}
-        />
+        <div className="clue-panel">
+          <ClueList
+            clues={clueInfos}
+            activeClue={activeClue}
+            onClueClick={jumpToClue}
+          />
+          {!hasReclued && (
+            <button
+              className="reclue-btn"
+              onClick={handleReclue}
+              disabled={recluing}
+            >
+              {recluing ? "Thinking harder..." : "Upgrade clues with Opus"}
+            </button>
+          )}
+          {hasReclued && (
+            <p className="reclue-done">Clues upgraded with Opus</p>
+          )}
+        </div>
       </div>
 
-      {/* Modal on solve — click backdrop to dismiss */}
       {showModal && (
         <div className="modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -121,7 +153,6 @@ export function PlayPage({ puzzle, costCents, onNewPuzzle }: Props) {
         </div>
       )}
 
-      {/* Inline section always visible after finish (modal dismissed or reveal) */}
       {finished && !showModal && (
         <div className="finish-section">
           <h2>{isComplete ? "Solved" : "Revealed"}</h2>

@@ -337,6 +337,9 @@ fn solve(
     let time_per_restart = timeout_secs / num_restarts as f64;
     let fills_per_restart = 10;
 
+    // Words to ban from domains on later restarts (collected from found fills)
+    let mut banned_words: HashSet<Vec<u8>> = HashSet::new();
+
     for restart in 0..num_restarts {
         if Instant::now() > global_deadline || pool.len() >= top_k * 10 {
             break;
@@ -346,10 +349,22 @@ fn solve(
         let mut domains: Vec<Vec<usize>> = Vec::new();
         for slot in &solver_slots {
             let n = bank.bucket_len(slot.length);
-            let mut indices: Vec<usize> = (0..n).collect();
+            let mut indices: Vec<usize> = if restart > 0 {
+                // Exclude banned words from domains
+                (0..n)
+                    .filter(|&idx| !banned_words.contains(bank.get(slot.length, idx).0))
+                    .collect()
+            } else {
+                (0..n).collect()
+            };
+
             if restart > 0 {
-                let max_s = if n > 0 { bank.get(slot.length, 0).1 as f64 } else { 1.0 };
-                let noise = max_s * 0.5;
+                // Full random shuffle with score-weighted noise
+                let max_s = if !indices.is_empty() {
+                    bank.get(slot.length, indices[0]).1 as f64
+                } else { 1.0 };
+                let noise_factor = 0.5 + (restart as f64 / num_restarts as f64) * 1.5;
+                let noise = max_s * noise_factor;
                 let mut jittered = vec![0.0f64; n];
                 for &idx in &indices {
                     jittered[idx] = bank.get(slot.length, idx).1 as f64
@@ -357,6 +372,7 @@ fn solve(
                 }
                 indices.sort_by(|&a, &b| jittered[b].total_cmp(&jittered[a]));
             } else {
+                // First restart: shuffle within score tiers
                 let mut i = 0;
                 while i < indices.len() {
                     let tier_score = bank.get(slot.length, indices[i]).1;
@@ -379,11 +395,19 @@ fn solve(
         let mut solver = Solver::new(&solver_slots, &bank, domains, remaining, fills_per_restart);
         solver.solve();
 
-        for result in solver.results {
+        for result in &solver.results {
             let mut key: Vec<String> = result.iter().map(|(_, w, _)| w.clone()).collect();
             key.sort();
             if seen.insert(key) {
-                pool.push(result);
+                pool.push(result.clone());
+            }
+        }
+
+        // Ban the most common words from found fills to force diversity
+        // Pick 1-2 words from each fill to ban on next restart
+        for result in &solver.results {
+            if let Some((_, word, _)) = result.first() {
+                banned_words.insert(word.as_bytes().to_vec());
             }
         }
     }

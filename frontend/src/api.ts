@@ -73,3 +73,18 @@ export function generatePuzzle(
 
   return () => abortController.abort();
 }
+
+export async function recluePuzzle(
+  puzzle: PuzzleData,
+  difficulty: string
+): Promise<{ clues: PuzzleData["clues"]; cost_cents: number }> {
+  const response = await fetch("/api/reclue", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ puzzle, difficulty }),
+  });
+  if (!response.ok) {
+    throw new Error(`Reclue failed: ${response.status}`);
+  }
+  return response.json();
+}

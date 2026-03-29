@@ -17,6 +17,10 @@ export default function App() {
           setPuzzle(null);
           setCostCents(null);
         }}
+        onPuzzleUpdate={(p, cost) => {
+          setPuzzle(p);
+          setCostCents(cost);
+        }}
       />
     );
   }

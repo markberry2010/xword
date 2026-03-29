@@ -87,12 +87,17 @@ DIFFICULTY_GUIDES = {
 **Monday-level.** Straightforward but not boring. The solver should be able to \
 get most clues without crosses, but still feel clever.
 
-Examples at this level:
-- APPLE: "iPhone maker" (not "A fruit")
-- DREAM: "MLK's 'I Have a ___' speech"
-- PASTA: "Penne or rigatoni"
-- CRUSH: "Romantic infatuation"
-- STEER: "Guide, as a ship"
+Real NYT Mini clues at this level:
+- CUBE: "Shape of sugar or ice"
+- DOCK: "Boat loading area"
+- SLEET: "Freezing rain"
+- HOST: "Game show leader"
+- CHEF: "Many a cookbook author"
+- CHILL: "Laid-back"
+- ELITE: "Cream of the crop"
+- HADES: "Greek underworld"
+- INDEX: "Pointer finger"
+- GRAIN: "Crop such as wheat or rice"
 
 Avoid: obscure references, heavy wordplay, ? clues (use sparingly).""",
 
@@ -100,12 +105,17 @@ Avoid: obscure references, heavy wordplay, ? clues (use sparingly).""",
 **Wednesday-level.** Misdirection and double meanings are expected. The solver \
 should need some crosses to confirm answers.
 
-Examples at this level:
-- APPLE: "Core company?" (? signals wordplay — apple core / core business)
-- DREAM: "It might be lucid"
-- BARK: "It comes from a trunk"
-- CRUSH: "Orange ___"
-- MARS: "Milky Way neighbor" (candy bar aisle or solar system?)
+Real NYT Mini clues at this level:
+- DRAMA: "Result of inviting an ex to your wedding, maybe"
+- OHIO: "State with cities named Lisbon, Milan, London, Moscow and Athens"
+- RHYME: "Tissue or 'Miss you,' for this clue?"
+- TORUS: "Shape of an inner tube"
+- BUMPY: "Like rides on pothole-strewn roads"
+- DONUT: "Some spell this with an 'ugh' in the middle"
+- TIMER: "Stopwatch, e.g."
+- ARMS: "What tank tops expose"
+- HAND: "It makes waves"
+- DAVID: "Renaissance masterpiece that stands at 17 feet tall"
 
 Mix: ~half straight definitions, ~half misdirection/wordplay.""",
 
@@ -113,12 +123,17 @@ Mix: ~half straight definitions, ~half misdirection/wordplay.""",
 **Saturday-level.** Heavy misdirection, obscure angles, minimal giveaways. \
 The solver should struggle without crosses.
 
-Examples at this level:
-- APPLE: "Big name in core technology?" (triple meaning)
-- DREAM: "REM product"
-- BARK: "Canoe material" (birch bark — not the sound)
-- CRUSH: "Limeade, e.g." (it's a brand of soda)
-- STEER: "Ranch hand's charge" (not driving)
+Real NYT Mini clues at this level:
+- MAY: "Month that's a vegetable spelled backward"
+- TUDUM: "Official spelling of the Netflix opening sound"
+- PSST: "[Hey you, over here!]"
+- DOG: "On the Internet, nobody knows you're a ___"
+- UHOH: "Equivalent to the Grimacing Face emoji"
+- KARMA: "Cosmic comeuppance"
+- NOFUN: "Like a party pooper"
+- FOMO: "'Everyone is having fun without me' feeling, for short"
+- BEAM: "Smile wide"
+- SURF: "Ride the wave"
 
 Nearly all clues should misdirect. Use ? liberally. Short clues preferred.""",
 }

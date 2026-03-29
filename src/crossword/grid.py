@@ -292,6 +292,21 @@ MINI_PATTERNS: list[set[tuple[int, int]]] = [
 ]
 
 
+# --- Curated 7x7 patterns (from NYT July 2023) ---
+
+MIDI_PATTERNS: list[set[tuple[int, int]]] = [
+    # Staircase (Jul 08): 12 blacks
+    {(0, 4), (0, 5), (0, 6), (1, 5), (1, 6), (2, 6),
+     (4, 0), (5, 0), (5, 1), (6, 0), (6, 1), (6, 2)},
+
+    # Center bar (Jul 15): 4 blacks
+    {(3, 0), (3, 1), (3, 5), (3, 6)},
+
+    # Corner block (Jul 29): 6 blacks
+    {(0, 0), (0, 1), (0, 2), (3, 4), (3, 5), (3, 6)},
+]
+
+
 def get_mini_patterns() -> list[GridPattern]:
     """Return all curated 5x5 mini patterns as built GridPatterns."""
     patterns = []
@@ -301,3 +316,146 @@ def get_mini_patterns() -> list[GridPattern]:
         if valid:
             patterns.append(grid.build())
     return patterns
+
+
+def get_midi_patterns() -> list[GridPattern]:
+    """Return all curated 7x7 patterns as built GridPatterns."""
+    patterns = []
+    for blacks in MIDI_PATTERNS:
+        grid = Grid(7, blacks)
+        valid, violations = Grid.validate(7, blacks)
+        if valid:
+            patterns.append(grid.build())
+    return patterns
+
+
+def generate_pattern(size: int, target_blacks: int = 0, max_attempts: int = 2000) -> GridPattern | None:
+    """Generate a random valid grid pattern of the given size.
+
+    Uses an incremental approach: place one symmetric pair of blacks at a time,
+    checking validity after each placement. This avoids creating short words
+    or disconnected regions.
+
+    target_blacks: approximate number of black squares desired.
+        If 0, uses a reasonable default based on size.
+    """
+    import random
+
+    if target_blacks == 0:
+        # Heuristic: scale with grid size
+        if size <= 7:
+            target_blacks = max(4, int(size * size * 0.12))
+        else:
+            target_blacks = int(size * size * 0.18)
+
+    pairs_needed = target_blacks // 2
+
+    for _ in range(max_attempts):
+        blacks: set[tuple[int, int]] = set()
+
+        # Build candidate positions (half of the grid for symmetry)
+        candidates = []
+        for r in range(size):
+            for c in range(size):
+                if r < size - 1 - r or (r == size - 1 - r and c <= size - 1 - c):
+                    candidates.append((r, c))
+        random.shuffle(candidates)
+
+        # Incrementally place blacks, validating after each
+        for r, c in candidates:
+            if len(blacks) // 2 >= pairs_needed:
+                break
+
+            partner = (size - 1 - r, size - 1 - c)
+            trial = blacks | {(r, c), partner}
+
+            # Quick reject: would this create a word shorter than 3?
+            if _creates_short_word(size, trial, r, c) or (
+                (r, c) != partner and _creates_short_word(size, trial, *partner)
+            ):
+                continue
+
+            # Quick reject: would this isolate a cell?
+            if _isolates_cell(size, trial, r, c) or (
+                (r, c) != partner and _isolates_cell(size, trial, *partner)
+            ):
+                continue
+
+            blacks = trial
+
+        # Final validation
+        if len(blacks) >= 2:
+            valid, _ = Grid.validate(size, blacks)
+            if valid:
+                grid = Grid(size, blacks)
+                return grid.build()
+
+    return None
+
+
+def _creates_short_word(size: int, blacks: set, r: int, c: int) -> bool:
+    """Check if adding a black at (r,c) creates any word shorter than 3."""
+    # Check the horizontal word segments adjacent to (r,c)
+    for dr, dc in [(0, 1), (1, 0)]:  # horizontal, vertical
+        # Check segment before (r,c)
+        length = 0
+        nr, nc = r - dr, c - dc
+        while 0 <= nr < size and 0 <= nc < size and (nr, nc) not in blacks:
+            length += 1
+            nr -= dr
+            nc -= dc
+        if 1 <= length <= 2:
+            return True
+
+        # Check segment after (r,c)
+        length = 0
+        nr, nc = r + dr, c + dc
+        while 0 <= nr < size and 0 <= nc < size and (nr, nc) not in blacks:
+            length += 1
+            nr += dr
+            nc += dc
+        if 1 <= length <= 2:
+            return True
+
+    return False
+
+
+def _isolates_cell(size: int, blacks: set, r: int, c: int) -> bool:
+    """Check if placing a black at (r,c) would leave an adjacent cell
+    with no across or no down word (isolated in one direction)."""
+    for nr, nc in [(r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1)]:
+        if not (0 <= nr < size and 0 <= nc < size) or (nr, nc) in blacks:
+            continue
+        # Check this neighbor has at least one horizontal and one vertical neighbor
+        h_count = 0
+        for dc in [-1, 1]:
+            cc = nc + dc
+            if 0 <= cc < size and (nr, cc) not in blacks:
+                h_count += 1
+        v_count = 0
+        for dr in [-1, 1]:
+            rr = nr + dr
+            if 0 <= rr < size and (rr, nc) not in blacks:
+                v_count += 1
+        if h_count == 0 or v_count == 0:
+            return True
+    return False
+
+
+def get_patterns(size: int) -> list[GridPattern]:
+    """Get patterns for a given grid size. Uses curated patterns where
+    available, generates random valid patterns as supplement."""
+    if size == 5:
+        return get_mini_patterns()
+    elif size == 7:
+        return get_midi_patterns()
+    else:
+        # Generate a few random patterns
+        patterns = []
+        for _ in range(10):
+            p = generate_pattern(size)
+            if p is not None:
+                patterns.append(p)
+            if len(patterns) >= 3:
+                break
+        return patterns

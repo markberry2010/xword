@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 log = logging.getLogger(__name__)
 
 from crossword.clues import ClueGenerator
-from crossword.grid import Grid, get_mini_patterns
+from crossword.grid import Grid, get_patterns
 from crossword.judge import FillJudge
 from crossword.puzzle import Puzzle, PuzzleMetadata
 from crossword.solver import Fill, Solver, SolverConfig
@@ -64,18 +64,13 @@ def generate_puzzle(
     progress("loading", f"Loaded {len(wordlist)} words", 5)
 
     # 2. Select grid pattern
-    if size == 5:
-        patterns = get_mini_patterns()
-        if not patterns:
-            raise RuntimeError("No valid 5x5 patterns available")
-        if pattern_index is not None and 0 <= pattern_index < len(patterns):
-            pattern = patterns[pattern_index]
-        else:
-            pattern = random.choice(patterns)
+    patterns = get_patterns(size)
+    if not patterns:
+        raise RuntimeError(f"No valid {size}x{size} patterns available")
+    if pattern_index is not None and 0 <= pattern_index < len(patterns):
+        pattern = patterns[pattern_index]
     else:
-        # For non-5x5, create an open grid
-        grid = Grid(size, set())
-        pattern = grid.build()
+        pattern = random.choice(patterns)
 
     progress("grid", f"Grid: {size}x{size} with {len(pattern.blacks)} black squares, {len(pattern.slots)} slots", 10)
 

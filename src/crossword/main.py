@@ -3,7 +3,6 @@
 import argparse
 import random
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -78,55 +77,20 @@ def generate_puzzle(
     if not fills:
         raise RuntimeError("No valid fills found for this pattern. Try a different pattern or lower min_word_score.")
 
-    # 4. Judge + clue generation (parallel where possible)
-    judge = FillJudge()
-    clue_gen = ClueGenerator()
-
+    # 4. Judge: score each fill independently in parallel
     if use_judge and len(fills) > 1:
-        # Run judge and speculative clue generation in parallel:
-        # - Judge ranks all fills
-        # - Clue gen starts on the top 3 fills by score (speculative)
-        # Whichever fill the judge picks, we likely already have its clues.
-        speculative_count = min(3, len(fills))
-        top_by_score = sorted(fills, key=lambda f: f.score.composite, reverse=True)[:speculative_count]
+        print(f"Scoring {len(fills)} fills in parallel...")
+        judge = FillJudge()
+        fills = judge.rank_fills(fills, pattern)
 
-        print("Ranking fills and generating clues in parallel...")
-        judge_result = None
-        clue_results = {}
+    best_fill = fills[0]
+    print(f"Selected fill (score={best_fill.score.composite:.0f}):")
+    _print_grid(best_fill, pattern)
 
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            judge_future = executor.submit(judge.rank_fills, fills, pattern)
-            clue_futures = {
-                executor.submit(
-                    clue_gen.generate_clues, fill, pattern,
-                    difficulty=difficulty, theme=theme,
-                ): fill
-                for fill in top_by_score
-            }
-
-            judge_result = judge_future.result()
-            for future in as_completed(clue_futures):
-                fill = clue_futures[future]
-                clue_results[id(fill)] = future.result()
-
-        fills = judge_result
-        best_fill = fills[0]
-        print(f"Selected fill (score={best_fill.score.composite:.0f}):")
-        _print_grid(best_fill, pattern)
-
-        # Use speculative clues if we have them, otherwise generate
-        if id(best_fill) in clue_results:
-            print("Using pre-generated clues (cache hit)")
-            clues = clue_results[id(best_fill)]
-        else:
-            print("Judge picked a different fill, generating clues...")
-            clues = clue_gen.generate_clues(best_fill, pattern, difficulty=difficulty, theme=theme)
-    else:
-        best_fill = fills[0]
-        print(f"Selected fill (score={best_fill.score.composite:.0f}):")
-        _print_grid(best_fill, pattern)
-        print("Generating clues...")
-        clues = clue_gen.generate_clues(best_fill, pattern, difficulty=difficulty, theme=theme)
+    # 5. Generate clues
+    print("Generating clues...")
+    clue_gen = ClueGenerator()
+    clues = clue_gen.generate_clues(best_fill, pattern, difficulty=difficulty, theme=theme)
 
     # 6. Assemble puzzle
     metadata = PuzzleMetadata(
@@ -159,7 +123,7 @@ def cli():
     parser.add_argument("--wordlist", default=None, help="Path to wordlist file")
     parser.add_argument("--output", "-o", default=None, help="Output file path")
     parser.add_argument("--format", default="text", choices=["text", "json", "display"])
-    parser.add_argument("--top-k", type=int, default=10, help="Number of candidate fills")
+    parser.add_argument("--top-k", type=int, default=15, help="Number of candidate fills to score")
     parser.add_argument("--no-judge", action="store_true", help="Skip LLM judge")
     parser.add_argument("--timeout", type=float, default=30.0, help="Solver timeout in seconds")
     parser.add_argument("--min-score", type=int, default=60, help="Minimum word score (1-100 scale)")

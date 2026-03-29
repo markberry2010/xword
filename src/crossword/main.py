@@ -1,12 +1,15 @@
 """Orchestrator: wire together wordlist, grid, solver, judge, clues, and output."""
 
 import argparse
+import logging
 import random
 import sys
 from collections.abc import Callable
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+log = logging.getLogger(__name__)
 
 from crossword.clues import ClueGenerator
 from crossword.grid import Grid, get_mini_patterns
@@ -52,7 +55,7 @@ def generate_puzzle(
     def progress(stage: str, message: str, pct: int) -> None:
         if on_progress:
             on_progress(stage, message, pct)
-        print(message)
+        log.info(message)
 
     # 1. Load wordlist
     if wordlist is None:

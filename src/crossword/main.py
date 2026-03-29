@@ -3,6 +3,7 @@
 import argparse
 import random
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -40,12 +41,24 @@ def generate_puzzle(
     timeout: float = 30.0,
     min_word_score: int = 20,
     pattern_index: int | None = None,
+    on_progress: Callable[[str, str, int], None] | None = None,
+    wordlist: WordList | None = None,
 ) -> Puzzle:
-    """Generate a complete crossword puzzle."""
+    """Generate a complete crossword puzzle.
+
+    on_progress(stage, message, pct) is called at each pipeline stage.
+    wordlist can be passed to avoid reloading from disk.
+    """
+    def progress(stage: str, message: str, pct: int) -> None:
+        if on_progress:
+            on_progress(stage, message, pct)
+        print(message)
+
     # 1. Load wordlist
-    wl_path = Path(wordlist_path) if wordlist_path else find_wordlist()
-    wordlist = WordList(wl_path)
-    print(f"Loaded {len(wordlist)} words")
+    if wordlist is None:
+        wl_path = Path(wordlist_path) if wordlist_path else find_wordlist()
+        wordlist = WordList(wl_path)
+    progress("loading", f"Loaded {len(wordlist)} words", 5)
 
     # 2. Select grid pattern
     if size == 5:
@@ -61,7 +74,7 @@ def generate_puzzle(
         grid = Grid(size, set())
         pattern = grid.build()
 
-    print(f"Grid: {size}x{size} with {len(pattern.blacks)} black squares, {len(pattern.slots)} slots")
+    progress("grid", f"Grid: {size}x{size} with {len(pattern.blacks)} black squares, {len(pattern.slots)} slots", 10)
 
     # 3. Generate fills
     config = SolverConfig(
@@ -70,27 +83,28 @@ def generate_puzzle(
         min_word_score=min_word_score,
     )
     solver = Solver(wordlist, config)
-    print("Solving...")
+    progress("solving", "Finding fills...", 15)
     fills = solver.solve(pattern)
-    print(f"Found {len(fills)} fills")
+    progress("solving", f"Found {len(fills)} fills", 40)
 
     if not fills:
         raise RuntimeError("No valid fills found for this pattern. Try a different pattern or lower min_word_score.")
 
     # 4. Judge: score each fill independently in parallel
     if use_judge and len(fills) > 1:
-        print(f"Scoring {len(fills)} fills in parallel...")
+        progress("judging", f"Scoring {len(fills)} fills...", 50)
         judge = FillJudge()
         fills = judge.rank_fills(fills, pattern)
 
     best_fill = fills[0]
-    print(f"Selected fill (score={best_fill.score.composite:.0f}):")
+    progress("judging", f"Selected fill (score={best_fill.score.composite:.0f})", 70)
     _print_grid(best_fill, pattern)
 
     # 5. Generate clues
-    print("Generating clues...")
+    progress("cluing", "Writing clues...", 75)
     clue_gen = ClueGenerator()
     clues = clue_gen.generate_clues(best_fill, pattern, difficulty=difficulty, theme=theme)
+    progress("done", "Puzzle complete!", 100)
 
     # 6. Assemble puzzle
     metadata = PuzzleMetadata(

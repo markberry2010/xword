@@ -6,8 +6,16 @@ interface Props {
   onPuzzleReady: (puzzle: PuzzleData, costCents: number | null) => void;
 }
 
+const SIZES = [
+  { value: 5, label: "5 x 5", desc: "Mini" },
+  { value: 7, label: "7 x 7", desc: "Midi" },
+  { value: 9, label: "9 x 9", desc: "Standard" },
+  { value: 15, label: "15 x 15", desc: "Full" },
+];
+
 export function GeneratePage({ onPuzzleReady }: Props) {
   const [difficulty, setDifficulty] = useState("easy");
+  const [size, setSize] = useState(5);
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState<ProgressEvent | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +27,7 @@ export function GeneratePage({ onPuzzleReady }: Props) {
 
     generatePuzzle(
       difficulty,
+      size,
       (evt) => setProgress(evt),
       (puzzle, costCents) => {
         setGenerating(false);
@@ -35,8 +44,24 @@ export function GeneratePage({ onPuzzleReady }: Props) {
     <div className="generate-page">
       <div className="generate-card">
         <h1>Project Unemploy Joel</h1>
-        <p className="tagline">AI-generated mini crosswords</p>
+        <p className="tagline">AI-generated crosswords</p>
 
+        <div className="picker-label">Size</div>
+        <div className="size-picker">
+          {SIZES.map((s) => (
+            <button
+              key={s.value}
+              className={`size-btn ${size === s.value ? "selected" : ""}`}
+              onClick={() => setSize(s.value)}
+              disabled={generating}
+            >
+              <span className="size-label">{s.label}</span>
+              <span className="size-desc">{s.desc}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="picker-label">Clue difficulty</div>
         <div className="difficulty-picker">
           {["easy", "medium", "hard"].map((d) => (
             <button

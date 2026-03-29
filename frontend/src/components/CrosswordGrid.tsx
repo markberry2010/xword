@@ -52,9 +52,14 @@ export function CrosswordGrid({
     }
   };
 
+  // Scale grid dimensions and font size based on puzzle size
+  const cellPx = size <= 5 ? 64 : size <= 7 ? 50 : size <= 9 ? 42 : 32;
+  const gridPx = cellPx * size + 6; // +6 for border
+  const letterSize = size <= 5 ? 24 : size <= 7 ? 20 : size <= 9 ? 16 : 13;
+  const numberSize = size <= 7 ? 9 : 7;
+
   return (
     <div className="crossword-grid-wrapper">
-      {/* Hidden input for mobile keyboard */}
       <input
         ref={inputRef}
         className="grid-hidden-input"
@@ -75,6 +80,11 @@ export function CrosswordGrid({
         style={{
           gridTemplateColumns: `repeat(${size}, 1fr)`,
           gridTemplateRows: `repeat(${size}, 1fr)`,
+          width: `${gridPx}px`,
+          height: `${gridPx}px`,
+          // Pass sizing to cells via CSS custom properties
+          ["--cell-letter-size" as string]: `${letterSize}px`,
+          ["--cell-number-size" as string]: `${numberSize}px`,
         }}
       >
         {cells.flat().map((cell) => {

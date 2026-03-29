@@ -99,15 +99,20 @@ async def generate(
             progress_queue.put_nowait((stage, message, pct))
 
         async def run_generation():
+            # Scale solver params by grid size
+            min_score = {5: 60, 7: 60, 9: 40, 11: 35, 15: 30}.get(size, 40)
+            top_k = 15 if size <= 7 else 10 if size <= 9 else 5
+            timeout = 15.0 if size <= 7 else 30.0
+
             try:
                 puzzle = await asyncio.to_thread(
                     generate_puzzle,
                     size=size,
                     difficulty=difficulty,
-                    top_k_fills=15,
+                    top_k_fills=top_k,
                     use_judge=True,
-                    timeout=30.0,
-                    min_word_score=60,
+                    timeout=timeout,
+                    min_word_score=min_score,
                     on_progress=on_progress,
                     wordlist=get_wordlist(),
                 )

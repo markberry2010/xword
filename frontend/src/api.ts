@@ -2,13 +2,14 @@ import type { PuzzleData, ProgressEvent } from "./types";
 
 export function generatePuzzle(
   difficulty: string,
+  size: number,
   onProgress: (event: ProgressEvent) => void,
   onComplete: (puzzle: PuzzleData, costCents: number | null) => void,
   onError: (message: string) => void
 ): () => void {
   const abortController = new AbortController();
 
-  const url = `/api/generate?difficulty=${encodeURIComponent(difficulty)}`;
+  const url = `/api/generate?difficulty=${encodeURIComponent(difficulty)}&size=${size}`;
 
   fetch(url, { signal: abortController.signal })
     .then(async (response) => {

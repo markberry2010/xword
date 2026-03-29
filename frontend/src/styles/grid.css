@@ -20,13 +20,11 @@
 .crossword-grid {
   display: grid;
   gap: 0;
-  width: 320px;
-  height: 320px;
   border: 3px solid var(--charcoal);
   outline: none;
-  flex-shrink: 0;
   user-select: none;
   box-shadow: 4px 4px 0 var(--gold-light);
+  /* width/height set inline based on grid size */
 }
 
 .crossword-grid:focus {
@@ -71,10 +69,10 @@
 
 .cell-number {
   position: absolute;
-  top: 2px;
-  left: 3px;
+  top: 1px;
+  left: 2px;
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 9px;
+  font-size: var(--cell-number-size, 9px);
   font-weight: 700;
   line-height: 1;
   color: var(--gold-dark);
@@ -82,7 +80,7 @@
 
 .cell-letter {
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 24px;
+  font-size: var(--cell-letter-size, 24px);
   font-weight: 600;
   text-transform: uppercase;
   line-height: 1;

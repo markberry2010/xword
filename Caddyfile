@@ -1,0 +1,13 @@
+{$DOMAIN:localhost} {
+    reverse_proxy app:8000
+
+    header /assets/* {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    header /api/* {
+        Cache-Control "no-store"
+    }
+
+    encode gzip zstd
+}

@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.egg-info
+node_modules
+frontend/dist
+.env
+.context
+July23-Minis
+examples
+tests
+.pytest_cache

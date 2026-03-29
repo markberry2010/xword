@@ -14,7 +14,11 @@ export function generatePuzzle(
   fetch(url, { signal: abortController.signal })
     .then(async (response) => {
       if (!response.ok) {
-        onError(`Server error: ${response.status}`);
+        if (response.status === 429) {
+          onError("Slow down! Too many puzzles. Try again in a minute.");
+        } else {
+          onError(`Server error: ${response.status}`);
+        }
         return;
       }
       const reader = response.body?.getReader();
@@ -85,6 +89,9 @@ export async function recluePuzzle(
     body: JSON.stringify({ puzzle, difficulty }),
   });
   if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error("Slow down! Try upgrading clues again in a minute.");
+    }
     throw new Error(`Reclue failed: ${response.status}`);
   }
   return response.json();

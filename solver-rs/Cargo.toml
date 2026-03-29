@@ -1,0 +1,12 @@
+[package]
+name = "xword_solver"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "xword_solver"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.24", features = ["extension-module"] }
+rand = "0.9"

@@ -2,28 +2,58 @@
 
 import asyncio
 import json
+import logging
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 from sse_starlette.sse import EventSourceResponse
 
 from crossword.main import generate_puzzle
 from crossword.wordlist import WordList
 
-load_dotenv()
+if os.environ.get("ENV") != "production":
+    from dotenv import load_dotenv
+    load_dotenv()
+
+# Structured logging
+logging.basicConfig(
+    level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+log = logging.getLogger("crossword.server")
 
 app = FastAPI(title="Project Unemploy Joel")
 
+# CORS — restrict origins in production via ALLOWED_ORIGINS env var
+_allowed_origins = os.environ.get("ALLOWED_ORIGINS", "").split(",")
+_allowed_origins = [o.strip() for o in _allowed_origins if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=_allowed_origins if _allowed_origins else ["http://localhost:5173"],
+    allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Try again later."},
+    )
 
 # Load wordlist once at startup
 _wordlist: WordList | None = None
@@ -39,8 +69,9 @@ def get_wordlist() -> WordList:
 
 @app.on_event("startup")
 async def startup():
-    # Pre-load wordlist in background
+    log.info("Pre-loading wordlist...")
     await asyncio.to_thread(get_wordlist)
+    log.info("Wordlist loaded (%d words)", len(get_wordlist()))
 
 
 @app.get("/api/health")
@@ -49,7 +80,9 @@ async def health():
 
 
 @app.get("/api/generate")
+@limiter.limit("5/minute")
 async def generate(
+    request: Request,
     difficulty: str = Query(default="medium", pattern="^(easy|medium|hard)$"),
     size: int = Query(default=5, ge=5, le=5),
 ):

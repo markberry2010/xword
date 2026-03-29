@@ -9,6 +9,120 @@ from crossword.grid import GridPattern
 from crossword.puzzle import Clue
 from crossword.solver import Fill
 
+CLUE_SYSTEM_PROMPT = """\
+You are a top-tier NYT crossword clue writer with the dry wit of a New Yorker \
+cartoon and the precision of Will Shortz. Your clues are famous for making \
+solvers groan, laugh, and slap their foreheads."""
+
+CLUE_USER_PROMPT = """\
+Write clues for this {size}x{size} crossword puzzle.
+
+## Difficulty: {difficulty}
+
+{difficulty_guide}
+
+## Clue-writing rules
+
+1. **Misdirect.** The best clues point the solver's mind in the wrong direction.
+   - BARK: "It comes from a trunk" (tree trunk? car trunk? No — dog!)
+   - CRUSH: "Orange ___" (the drink, not the emotion)
+   - MARS: "It has two moons" (planet, not the candy bar)
+
+2. **Concise.** 2-6 words ideal. Never exceed 8 words. Shorter = harder.
+
+3. **Vary clue types** across the puzzle:
+   - Straight definition: "Venetian transport" → GONDOLA
+   - Misdirection: "Suit material?" → HEART (playing cards, not fabric)
+   - Fill-in-the-blank: "___ and cheese" → MAC
+   - Pop culture: "Frozen queen" → ELSA
+   - Wordplay/pun: "Band with a sting?" → WASP (use ? to signal wordplay)
+   - Cross-reference: "With 5-Down, a classic pair" (when entries relate)
+
+4. **Every clue must be fair.** The solver should say "aha!" not "that's wrong."
+   The clue must have a defensible, unambiguous path to the answer.
+
+5. **Question marks signal wordplay.** Use ? when the clue involves a pun, \
+double meaning, or non-literal interpretation. Do NOT use ? for straight clues.
+
+6. **For proper nouns**, clue via the most widely known reference. Prefer \
+pop culture over obscure historical figures.
+
+## What NOT to do
+
+BAD clues (generic, boring, or unfair):
+- "A type of animal" → too vague, could be anything
+- "Musical instrument with strings" → too long, no misdirection
+- "Crossword staple" → self-referential, lazy
+- "See dictionary" → useless
+- "Famous person" → not a real clue
+- Defining PEACE as "Opposite of war" → obvious, no craft
+
+GOOD versions of the same:
+- TIGER: "Cereal box mascot" (Tony the Tiger — misdirects from the animal)
+- CELLO: "Yo-Yo Ma's instrument" (specific, evocative)
+- PEACE: "Nobel category" (misdirects toward prizes, not the concept)
+
+## Grid
+
+```
+{grid_text}
+```
+
+## Words to clue
+
+{words_section}
+{theme_line}
+## Response format
+
+Return ONLY a JSON object. No markdown, no explanation:
+{{
+    "1A": {{"clue": "Your clue text", "alternatives": ["alt 1", "alt 2"]}},
+    "2D": {{"clue": "Your clue text", "alternatives": ["alt 1", "alt 2"]}}
+}}
+
+Each entry needs one primary clue and two alternatives (different angles/types)."""
+
+DIFFICULTY_GUIDES = {
+    "easy": """\
+**Monday-level.** Straightforward but not boring. The solver should be able to \
+get most clues without crosses, but still feel clever.
+
+Examples at this level:
+- APPLE: "iPhone maker" (not "A fruit")
+- DREAM: "MLK's 'I Have a ___' speech"
+- PASTA: "Penne or rigatoni"
+- CRUSH: "Romantic infatuation"
+- STEER: "Guide, as a ship"
+
+Avoid: obscure references, heavy wordplay, ? clues (use sparingly).""",
+
+    "medium": """\
+**Wednesday-level.** Misdirection and double meanings are expected. The solver \
+should need some crosses to confirm answers.
+
+Examples at this level:
+- APPLE: "Core company?" (? signals wordplay — apple core / core business)
+- DREAM: "It might be lucid"
+- BARK: "It comes from a trunk"
+- CRUSH: "Orange ___"
+- MARS: "Milky Way neighbor" (candy bar aisle or solar system?)
+
+Mix: ~half straight definitions, ~half misdirection/wordplay.""",
+
+    "hard": """\
+**Saturday-level.** Heavy misdirection, obscure angles, minimal giveaways. \
+The solver should struggle without crosses.
+
+Examples at this level:
+- APPLE: "Big name in core technology?" (triple meaning)
+- DREAM: "REM product"
+- BARK: "Canoe material" (birch bark — not the sound)
+- CRUSH: "Limeade, e.g." (it's a brand of soda)
+- STEER: "Ranch hand's charge" (not driving)
+
+Nearly all clues should misdirect. Use ? liberally. Short clues preferred.""",
+}
+
 
 class ClueGenerator:
     """Generate NYT-style clues using an LLM."""
@@ -43,6 +157,7 @@ class ClueGenerator:
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=2048,
+                system=CLUE_SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}],
             )
             return self._parse_response(response.content[0].text, fill, grid, difficulty)
@@ -56,23 +171,15 @@ class ClueGenerator:
         difficulty: str,
         theme: str | None,
     ) -> str:
-        # Render the filled grid
         size = grid.size
-        grid_lines = []
-        for r in range(size):
-            row = ""
-            for c in range(size):
-                if (r, c) in grid.blacks:
-                    row += "."
-                else:
-                    row += fill.cell_letters.get((r, c), "?")
-            grid_lines.append(row)
-
-        difficulty_guide = {
-            "easy": "Monday-level: straightforward definitions, common knowledge, no tricks.",
-            "medium": "Wednesday-level: some misdirection, double meanings, light wordplay.",
-            "hard": "Saturday-level: heavy misdirection, obscure angles, tricky wordplay.",
-        }
+        grid_text = "\n".join(
+            "".join(
+                "." if (r, c) in grid.blacks
+                else fill.cell_letters.get((r, c), "?")
+                for c in range(size)
+            )
+            for r in range(size)
+        )
 
         words_section = []
         for slot in sorted(grid.slots, key=lambda s: (s.direction != "across", s.id)):
@@ -81,34 +188,22 @@ class ClueGenerator:
             num = slot.id[:-1]
             words_section.append(f"{num}-{direction}: {word} ({slot.length} letters)")
 
-        theme_line = f"\nTheme: {theme}\nTry to connect clues to this theme where natural.\n" if theme else ""
+        theme_line = (
+            f"\n**Theme: {theme}**\nWeave the theme into clues where it fits naturally. "
+            "Not every clue needs to reference the theme.\n"
+            if theme else ""
+        )
 
-        return f"""You are a witty NYT crossword clue writer. Write clues for a {size}x{size} mini crossword.
+        difficulty_guide = DIFFICULTY_GUIDES.get(difficulty, DIFFICULTY_GUIDES["medium"])
 
-Difficulty: {difficulty} — {difficulty_guide.get(difficulty, difficulty_guide['medium'])}
-{theme_line}
-Guidelines:
-- Clues should misdirect where possible. Exploit alternate meanings.
-- Keep clues concise (2-8 words).
-- Vary clue types: definitions, wordplay, fill-in-the-blank, pop culture refs.
-- Every clue must be fair — a solver should say "aha!" not "that's wrong."
-- For proper nouns, clue via the most well-known reference.
-- Do NOT clue with "crossword staple" or self-referential meta-clues.
-
-Grid:
-{chr(10).join(grid_lines)}
-
-Words to clue:
-{chr(10).join(words_section)}
-
-Respond with a JSON object mapping slot IDs to clue objects:
-{{
-    "1A": {{"clue": "Your clue text", "alternatives": ["alt clue 1", "alt clue 2"]}},
-    "2D": {{"clue": "Your clue text", "alternatives": ["alt clue 1", "alt clue 2"]}},
-    ...
-}}
-
-Write ONLY the JSON, no other text."""
+        return CLUE_USER_PROMPT.format(
+            size=size,
+            difficulty=difficulty,
+            difficulty_guide=difficulty_guide,
+            grid_text=grid_text,
+            words_section="\n".join(words_section),
+            theme_line=theme_line,
+        )
 
     def _parse_response(
         self,

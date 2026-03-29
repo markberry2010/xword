@@ -87,7 +87,7 @@ async def health():
 async def generate(
     request: Request,
     difficulty: str = Query(default="medium", pattern="^(easy|medium|hard)$"),
-    size: int = Query(default=5, ge=5, le=15),
+    size: int = Query(default=5, ge=5, le=7),
 ):
     """Generate a puzzle, streaming progress via SSE."""
 

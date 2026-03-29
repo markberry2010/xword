@@ -9,8 +9,6 @@ interface Props {
 const SIZES = [
   { value: 5, label: "5 x 5", desc: "Mini" },
   { value: 7, label: "7 x 7", desc: "Midi" },
-  { value: 9, label: "9 x 9", desc: "Standard" },
-  { value: 15, label: "15 x 15", desc: "Full" },
 ];
 
 export function GeneratePage({ onPuzzleReady }: Props) {

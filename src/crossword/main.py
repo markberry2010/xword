@@ -162,7 +162,7 @@ def cli():
     parser.add_argument("--top-k", type=int, default=10, help="Number of candidate fills")
     parser.add_argument("--no-judge", action="store_true", help="Skip LLM judge")
     parser.add_argument("--timeout", type=float, default=30.0, help="Solver timeout in seconds")
-    parser.add_argument("--min-score", type=int, default=30, help="Minimum word score (wordlist uses 0-50 scale)")
+    parser.add_argument("--min-score", type=int, default=60, help="Minimum word score (1-100 scale)")
     parser.add_argument("--pattern", type=int, default=None, help="Pattern index (0-based)")
     parser.add_argument("--title", default="", help="Puzzle title")
     parser.add_argument("--author", default="", help="Puzzle author")

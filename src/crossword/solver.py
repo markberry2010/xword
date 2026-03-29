@@ -14,7 +14,7 @@ from crossword.wordlist import WordList
 class SolverConfig:
     top_k: int = 10
     timeout_seconds: float = 30.0
-    min_word_score: int = 30
+    min_word_score: int = 60
     min_diversity: int = 6  # minimum word differences between returned fills
 
 

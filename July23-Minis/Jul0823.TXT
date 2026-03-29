@@ -1,0 +1,33 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Sat, Jul 08, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    7x7
+<GRID>
+    MBAS...
+    OUGHT..
+    TOREUP.
+    EYEEXAM
+    .SERENA
+    ..DADDY
+    ...NOGO
+<ACROSS>
+    Degs. from Wharton
+    Really should, with "to"
+    Ripped to shreds
+    Time to look closely at the fine print?
+    Tennis star Williams
+    ___ longlegs (spider)
+    Something that just isn't gonna happen
+<DOWN>
+    Small speck of dust
+    Bobbing ocean markers
+    "I think you're right about that"
+    Pop singer Ed
+    What's expected of a wedding guest for a "Black Tie Required" event
+    Company that makes Tide/Bounty/Pampers, for short
+    White condiment

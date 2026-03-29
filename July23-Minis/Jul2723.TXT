@@ -1,0 +1,28 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Thu, Jul 27, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    6x5
+<GRID>
+    .SNOB.
+    ATONED
+    PORTER
+    TUTORS
+    STEPS.
+<ACROSS>
+    Haughty person
+    Apologized for one's sins
+    Luggage carrier at a hotel
+    One-on-one teachers
+    Studies recommend taking 8,000+ of these each day
+<DOWN>
+    Sturdy
+    Direction from Mexico to the U.S., en español
+    Victorious
+    7-Across and 1-Down, in different meanings
+    Many N.Y.C. dwellings: Abbr.
+    Hosp. personnel

@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Tue, Jul 25, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    MISS.
+    UHOH.
+    DONUT
+    .PINE
+    .EASE
+<ACROSS>
+    Hit's opposite
+    Equivalent to the Grimacing Face emoji
+    Some spell this with an "ugh" in the middle
+    Common scent of Christmas candles
+    Simplicity
+<DOWN>
+    Dirt + rain
+    "Wouldn't that be nice!"
+    Ketanji and Elena's partner on the liberal wing of the Supreme Court
+    Gives the cold shoulder
+    Golfer's peg

@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Mon, Jul 10, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    .HOST
+    .OHIO
+    BUMPY
+    ASAP.
+    DENY.
+<ACROSS>
+    Game show leader
+    State with cities named Lisbon, Milan, London, Moscow and Athens
+    Like rides on pothole-strewn roads
+    Right away
+    "For he's a jolly good fellow / Which nobody can ___" 
+<DOWN>
+    It meets in the south wing of the U.S. Capitol
+    "Hoo-boy ..."
+    Kind of cup for a small child
+    Happy Meal inclusion
+    Unfavorable

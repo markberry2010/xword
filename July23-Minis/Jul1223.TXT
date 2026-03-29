@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Wed, Jul 12, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    ..BPA
+    .HEAD
+    TORSO
+    LEGS.
+    CDS..
+<ACROSS>
+    ___-free (water bottle label)
+    Top section
+    Middle section
+    Bottom section
+    Audiophile's collection, once
+<DOWN>
+    Large chunks of floating ice
+    Fail's counterpart
+    "Much ___ About Nothing"
+    Broke ground in a garden
+    1990s girl group with the hit "No Scrubs"

@@ -1,0 +1,37 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Sat, Jul 15, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    7x7
+<GRID>
+    JACUZZI
+    DOLPHIN
+    SKITIPS
+    ..POV..
+    ALABAMA
+    FORAGED
+    COTTONS
+<ACROSS>
+    Hot tub with underwater jets
+    Animal with a sophisticated language of whistles and clicks
+    Ends of some winter sports equipment
+    Perspective, for short
+    Its capital is Montgomery
+    Looked for food in the woods
+    Begins to understand, with "on to"
+<DOWN>
+    Law degrees: Abbr.
+    Perfectly fine
+    Premade computer images
+    Facing the pitcher, in baseball
+    "Doctor ___," one of the ten highest-grossing films of all time when adjusted for inflation
+    Close, as a suitcase
+    Counterpart of outs
+    ___ Richmond, soccer team on "Ted Lasso"
+    British bathroom
+    Guys
+    Billboard displays

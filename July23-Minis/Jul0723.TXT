@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Fri, Jul 07, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    .DOCK
+    NOFUN
+    OUTRO
+    SLEET
+    HAND.
+<ACROSS>
+    Boat loading area
+    Like a party pooper
+    Concluding section of a song
+    Freezing rain
+    It makes waves
+<DOWN>
+    Trained childbirth assistant
+    Many times
+    Like much salami and prosciutto
+    Part of a tie
+    Small snack

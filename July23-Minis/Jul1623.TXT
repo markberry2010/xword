@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Sun, Jul 16, 2023
+<AUTHOR>
+    Joel Faglia
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    ..HUB
+    .FOMO
+    HAPPY
+    MVPS.
+    MAY..
+<ACROSS>
+    Busy airport
+    "Everyone is having fun without me" feeling, for short
+    In good spirits
+    Aaron Judge and Patrick Mahomes are reigning ones, in the M.L.B. and N.F.L.
+    New Jersey's Cape ___
+<DOWN>
+    Like I.P.A.s
+    Baseball officials
+    The "B" of EGBDF
+    Kind of bean
+    "Let me think ..."

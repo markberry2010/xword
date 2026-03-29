@@ -1,0 +1,29 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Tue, Jul 04, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    .CAP.
+    WaLeS
+    wIvEs
+    WRITE
+    .ONS.
+<REBUS>
+MARK;
+<ACROSS>
+    Top part of an ocean swell
+    Country between England and Ireland
+    "The Merry ___ of Windsor" (Shakespeare play)
+    Jot (down)
+    Opposite of offs
+<DOWN>
+    Capital of Egypt
+    ___ Bragg, Manhattan D.A. who brought a criminal case against Trump
+    Starbucks competitor
+    Part of a U.R.L.
+    Opposite of NNW

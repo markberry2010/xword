@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Fri, Jul 14, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    .DOG.
+    BELOW
+    ELITE
+    DAVID
+    .YET.
+<ACROSS>
+    "On the Internet, nobody knows you're a ___" (punchline of a classic New Yorker cartoon)
+    Word in negative temperatures
+    Cream of the crop
+    Renaissance masterpiece that stands at 17 feet tall
+    "Are we there ___?"
+<DOWN>
+    Make late
+    About 80% of this harvested fruit is turned into oil
+    "Understood"
+    Place for pillows
+    Get married

@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Sun, Jul 09, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    ASKS.
+    CLUE.
+    TUDUM
+    .ROSE
+    .PSST
+<ACROSS>
+    Makes a request
+    Crossword hint
+    Official spelling of the Netflix opening sound
+    Beautiful flower with a thorny stem
+    [Hey you, over here!]
+<DOWN>
+    Perform in a play
+    Noisily drink soup
+    Congratulations
+    Children's author with the line "Today was good. Today was fun. Tomorrow is another one"
+    Was introduced to

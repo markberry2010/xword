@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Mon, Jul 03, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    ..MAY
+    .CUBE
+    TORUS
+    OVAL.
+    YELL.
+<ACROSS>
+    Month that's a vegetable spelled backward
+    Shape of sugar or ice
+    Shape of an inner tube
+    Shape of a planet's orbital path
+    Raise one's voice
+<DOWN>
+    Artwork on the side of a building
+    Like ___ in a china shop
+    "That's correct"
+    Secluded bay
+    Plastic bone, for a dog

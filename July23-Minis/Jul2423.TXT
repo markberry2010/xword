@@ -1,0 +1,27 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Mon, Jul 24, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    5x5
+<GRID>
+    .CHEF
+    CHILL
+    LINDA
+    INDEX
+    PAIR.
+<ACROSS>
+    Many a cookbook author
+    Laid-back
+    ___ Yaccarino, Twitter C.E.O. who succeeded Elon Musk
+    Pointer finger
+    Group of socks, earrings or gloves
+<DOWN>
+    Porcelain dishes
+    Most spoken language in India
+    Senior member
+    Plant with a healthy seed
+    Film snippet

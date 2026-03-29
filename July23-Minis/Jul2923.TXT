@@ -1,0 +1,36 @@
+<ACROSS PUZZLE V2>
+<TITLE>
+    NY Times, Sat, Jul 29, 2023
+<AUTHOR>
+    Joel Fagliano
+<COPYRIGHT>
+    2023, The New York Times
+<SIZE>
+    7x7
+<GRID>
+    ...WISP
+    APRICOT
+    THENEWS
+    TILE...
+    ALIBABA
+    CLEANUP
+    HYDRATE
+<ACROSS>
+    Thin trail of smoke
+    Orange fruit that's often eaten dried
+    Six o'clock TV fare
+    Scrabble piece
+    Folk tale foe of the Forty Thieves
+    Fourth slot in a baseball lineup
+    Make sure to drink enough water
+<DOWN>
+    Its menu might have headers of "Sparkling," "Red" and "White"
+    Winter sidewalk hazard
+    Female pig
+    Scoreboard amts.
+    Email action symbolized by a paper clip
+    City known for its cheese steaks, informally
+    Depended (upon)
+    Actress de Armas
+    "However ..."
+    Great ___ House (part of the Smithsonian  National Zoo)

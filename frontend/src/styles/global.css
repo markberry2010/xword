@@ -42,6 +42,18 @@ body {
     linear-gradient(135deg, var(--cream) 0%, var(--ivory) 100%);
 }
 
+.footer-note {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+  font-style: italic;
+}
+
 .generate-card {
   text-align: center;
   max-width: 460px;

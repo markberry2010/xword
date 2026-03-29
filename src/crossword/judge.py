@@ -85,7 +85,7 @@ class FillJudge:
         self,
         client: anthropic.Anthropic | None = None,
         model: str = "claude-haiku-4-5-20251001",
-        max_workers: int = 10,
+        max_workers: int = 5,
     ):
         self.model = model
         self.max_workers = max_workers

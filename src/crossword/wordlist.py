@@ -12,12 +12,17 @@ class WordEntry:
 
 
 class WordList:
-    """Scored wordlist with indexed lookups by length and letter-position pattern."""
+    """Scored wordlist with indexed lookups by length and letter-position pattern.
+
+    The constraint index (used only by the Python fallback solver) is built
+    lazily on first use to save ~300MB of memory when the Rust solver handles
+    constraint lookups internally.
+    """
 
     def __init__(self, source_path: str | Path):
         self._words: dict[str, WordEntry] = {}
         self._by_length: dict[int, list[WordEntry]] = {}
-        self._by_constraint: dict[tuple[int, int, str], set[str]] = {}
+        self._by_constraint: dict[tuple[int, int, str], set[str]] | None = None
         self._load(Path(source_path))
 
     def _load(self, path: Path) -> None:
@@ -39,17 +44,25 @@ class WordList:
             entry = WordEntry(word=word, score=score)
             self._words[word] = entry
 
-        # Build indexes
+        # Build length index only — constraint index is lazy
         for entry in self._words.values():
             length = len(entry.word)
             self._by_length.setdefault(length, []).append(entry)
-            for pos, letter in enumerate(entry.word):
-                key = (length, pos, letter)
-                self._by_constraint.setdefault(key, set()).add(entry.word)
 
         # Sort each length bucket by score descending
         for length in self._by_length:
             self._by_length[length].sort(key=lambda e: e.score, reverse=True)
+
+    def _ensure_constraint_index(self) -> dict[tuple[int, int, str], set[str]]:
+        """Build constraint index on first use."""
+        if self._by_constraint is None:
+            self._by_constraint = {}
+            for entry in self._words.values():
+                length = len(entry.word)
+                for pos, letter in enumerate(entry.word):
+                    key = (length, pos, letter)
+                    self._by_constraint.setdefault(key, set()).add(entry.word)
+        return self._by_constraint
 
     def candidates(
         self, length: int, pattern: dict[int, str] | None = None
@@ -63,10 +76,11 @@ class WordList:
             return list(self._by_length.get(length, []))
 
         # Intersect constraint index sets
+        by_constraint = self._ensure_constraint_index()
         sets: list[set[str]] = []
         for pos, letter in pattern.items():
             key = (length, pos, letter.upper())
-            constraint_set = self._by_constraint.get(key)
+            constraint_set = by_constraint.get(key)
             if constraint_set is None:
                 return []
             sets.append(constraint_set)

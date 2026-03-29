@@ -42,14 +42,15 @@ class Solver:
         self.config = config or SolverConfig()
 
     def solve(self, grid: GridPattern) -> list[Fill]:
-        """Return up to top_k diverse fills, sorted by composite score descending.
-
-        Uses multiple restarts with reshuffled domains. Each restart finds a few
-        fills, then all are collected and diverse subset is selected.
-        """
+        """Return up to top_k diverse fills, sorted by composite score descending."""
         slots = grid.slots
         if not slots:
             return []
+
+        # Try Rust solver first
+        rust_result = self._try_rust_solve(grid)
+        if rust_result is not None:
+            return rust_result
 
         slot_index = {slot.id: i for i, slot in enumerate(slots)}
 
@@ -122,6 +123,67 @@ class Solver:
             return []
 
         return self._select_diverse(pool, pool_scores, grid, slot_index, slots)
+
+    def _try_rust_solve(self, grid: GridPattern) -> list[Fill] | None:
+        """Try to use the Rust solver. Returns None if not available."""
+        try:
+            import xword_solver
+        except ImportError:
+            return None
+
+        slots = grid.slots
+        slot_index = {slot.id: i for i, slot in enumerate(slots)}
+
+        # Serialize wordlist: collect all words across needed lengths
+        needed_lengths = {slot.length for slot in slots}
+        words = []
+        for length in needed_lengths:
+            for entry in self.wordlist.candidates(length):
+                words.append((entry.word, entry.score))
+
+        # Serialize slots: (id, length, crossings_as_tuples)
+        slot_data = []
+        for slot in slots:
+            crossings = []
+            for c in slot.crossings:
+                other_idx = slot_index[c.other_slot_id]
+                crossings.append((other_idx, c.self_pos, c.other_pos))
+            slot_data.append((slot.id, slot.length, crossings))
+
+        # Call Rust solver
+        raw_results = xword_solver.solve(
+            words=words,
+            slots=slot_data,
+            top_k=self.config.top_k,
+            timeout_secs=self.config.timeout_seconds,
+            min_score=self.config.min_word_score,
+            num_restarts=max(1, self.config.top_k),
+            min_diversity=self.config.min_diversity,
+        )
+
+        if not raw_results:
+            return None
+
+        # Convert to Fill objects
+        fills = []
+        for raw_fill in raw_results:
+            assignments = {}
+            cell_letters = {}
+            for slot_id, word, score in raw_fill:
+                assignments[slot_id] = word
+                slot = slots[slot_index[slot_id]]
+                for pos, cell in enumerate(slot.cells):
+                    cell_letters[cell] = word[pos]
+            fill = Fill(
+                grid=grid,
+                assignments=assignments,
+                cell_letters=cell_letters,
+                score=self.score_fill_from_assignments(assignments),
+            )
+            fills.append(fill)
+
+        fills.sort(key=lambda f: f.score.composite, reverse=True)
+        return fills
 
     def _build_arcs(
         self, slots: list[Slot], slot_index: dict[str, int]

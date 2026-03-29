@@ -1,3 +1,22 @@
+.crossword-grid-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.grid-hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  padding: 0;
+  border: none;
+  pointer-events: none;
+  /* Keep it in the DOM flow so mobile browsers show the keyboard */
+  z-index: -1;
+}
+
 .crossword-grid {
   display: grid;
   gap: 0;

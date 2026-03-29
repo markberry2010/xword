@@ -91,7 +91,7 @@ export function GeneratePage({ onPuzzleReady }: Props) {
 
         {error && <p className="error-message">{error}</p>}
       </div>
-      <p className="footer-note">made with love from a fellow blaisdell 132 resident</p>
+      <p className="footer-note">made with love by a fellow former blaisdell 132 resident</p>
     </div>
   );
 }

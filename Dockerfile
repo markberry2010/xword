@@ -22,7 +22,8 @@ FROM python:3.11-slim AS runtime
 WORKDIR /app
 
 # Install Python dependencies
-COPY pyproject.toml src/ ./src/
+COPY pyproject.toml ./
+COPY src/ ./src/
 RUN pip install --no-cache-dir .
 
 # Install Rust solver wheel

@@ -11,3 +11,4 @@ July23-Minis
 examples
 tests
 .pytest_cache
+solver-rs/target
